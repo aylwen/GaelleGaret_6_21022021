@@ -20,9 +20,11 @@ exports.registerSauce = (req, res, next) => {
     .then(() => res.status(201).json({
       message: 'Sauce enregistrée !'
     }))
-    .catch(error => res.status(400).json({
-      error
-    }));
+    .catch(error => { 
+      res.status(400).json({
+        message: 'les champs ne sont pas bien renseignés !'
+      });
+    });
 };
 
 exports.getAllSauces = (req, res, next) => {

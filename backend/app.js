@@ -1,7 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
+require('dotenv').config();
+
 const path = require('path');
+
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
 
 
 const userRoutes = require('./routes/user');
@@ -9,15 +18,12 @@ const saucesRoutes = require('./routes/sauces');
 
 
 const app = express();
+app.use(limiter);
 
 const session = require('cookie-session');
 const nocache = require('nocache');
 
-var myArgs = process.argv.slice(2);
-const user = myArgs[0]
-const password = myArgs[1]
-
-mongoose.connect('mongodb+srv://'+user+':'+password+'@cluster0.crviw.mongodb.net/mydata?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://'+process.env.DB_USER+':'+process.env.DB_PASS+'@cluster0.crviw.mongodb.net/mydata?retryWrites=true&w=majority',
   { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Successfully connected to MongoDB Atlas!');
